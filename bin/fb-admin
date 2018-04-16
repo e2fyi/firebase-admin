@@ -1,0 +1,190 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const chalk = require('chalk');
+const minimatch = require('minimatch');
+
+const stdo = console.log;
+const stde = console.error;
+
+// firebase util func
+const {
+  setCustomClaims,
+  listCustomClaims,
+  verifyCustomClaims,
+  listAllUsers,
+  end
+} = require('../index.js');
+
+// argument parser
+const ArgumentParser = require('argparse').ArgumentParser;
+
+// level 1
+const parser = new ArgumentParser({
+  version: '0.0.1',
+  addHelp: true,
+  description: 'cli command to manage custom claims for firebase users.'
+});
+
+// sub commands
+const subparsers = parser.addSubparsers({
+  title: 'subcommands',
+  dest: 'cmd'
+});
+
+/*
+ * SETUP .env
+ */
+const init = subparsers.addParser('project', {
+  addHelp: true,
+  help: 'Setup credential for a firebase project.'
+});
+init.addArgument(['cred'], {
+  help:
+    'Path to the JSON credential for firebase project.'
+});
+function execInit(args) {
+  const { cred } = args;
+  // check if crediential exists
+  if (!fs.existsSync(cred)) {
+    stde(chalk`{red ERROR: crediential<{bold ${cred}}> does not exist!`);
+    return;
+  }
+  // write to .env
+  const outStr = `FIREBASE_SERVICE_ACCOUNT=${cred}`;
+  try {
+    fs.writeFileSync('.env', outStr);
+    stdo(chalk`{green SUCCESS: credentials written to {bold .env}}`);
+  } catch (error) {
+    stde(chalk`{red ERROR: ${error}`);
+  }
+}
+
+/*
+ * SET CUSTOM CLAIMS
+ */
+const setClaims = subparsers.addParser('claims', {
+  addHelp: true,
+  help: 'Update the custom claims of a firebase user.'
+});
+setClaims.addArgument(['email'], {
+  help: 'firebase user email'
+});
+setClaims.addArgument(['-d', '--data'], {
+  help:
+    'Set the custom claims with the JSON string. e.g. \'{"admin":1}\'',
+  type: JSON.parse
+});
+setClaims.addArgument(['-f', '--flags'], {
+  help:
+    'Set a flag in custom claims with semicolon-delimited <field=value> pairs. e.g. -f admin=1;scope=all;',
+  type: str => str.split(';').map(t=>t.split('='))
+});
+
+function inferType(value) {
+  if (value.toLowerCase() === 'true') {
+    value = true;
+  } else if (value.toLowerCase() === 'false') {
+    value = false;
+  } else {
+    try {
+      value = parseFloat(value);
+    } catch (error) {
+      // do nothing
+    }
+  }
+  return value;
+}
+
+async function execClaim({ email, data, flags }) {
+  if (flags && flags.length > 0) {
+    data = {};
+    flags.forEach(([key, value])=>{
+      value = inferType(value);
+      data[key] = value;
+    });
+  }
+
+  if (!data) {
+    stde(
+      chalk`{red ERROR: Empty custom claims found. Values to {bold --data} or {bold --flag} cannot be empty!}`
+    );
+    return;
+  }
+
+  const uid = await getUID(email);
+  if (!uid) return;
+
+  try {
+    await setCustomClaims(uid, data);
+    stdo(chalk`{green SUCCESS: user<${email}>'s custom claims updated!}`);
+    await end();
+  } catch (error) {
+    stde(chalk`{red ERROR: ${error}}`);
+  }
+}
+
+/*
+ * LIST USERS
+ */
+const lsUsers = subparsers.addParser('users', {
+  addHelp: true,
+  help: 'List firebase users.'
+});
+
+lsUsers.addArgument(['-m', '--match'], {
+  defaultValue: '*',
+  help: 'List only users with email matching the provided minimatch pattern. e.g. *@email.com'
+});
+function printLs(list, pattern) {
+  if (pattern && pattern !== '*') {
+    list = list.filter(({ email }) => minimatch(email, pattern));
+  }
+  list.forEach(({ uid, email, emailVerified, customClaims }) => {
+    if (emailVerified)
+      stdo(
+        chalk`{green ${uid} \t {bold ${email}} \t ${emailVerified} \t\t ${JSON.stringify(
+          customClaims
+        )}}`
+      );
+    else
+      stdo(
+        chalk`{orange ${uid} \t {bold ${email}} \t ${emailVerified} \t\t ${JSON.stringify(
+          customClaims
+        )}}`
+      );
+  });
+}
+async function execListUsers({ match }) {
+  var { list, pageToken } = await listAllUsers();
+  stdo(chalk`{white uid \t\t\t\t email \t\t\t emailVerified \t customClaims}`);
+  printLs(list, match);
+  while (pageToken) {
+    var { list, pageToken } = await listAllUsers(pageToken);
+    printLs(list, match);
+  }
+  end();
+}
+
+/*
+ * MAIN
+ */
+function main() {
+  const args = parser.parseArgs();
+
+  switch (args.cmd) {
+    case 'project':
+      execInit(args);
+      break;
+    case 'claims':
+      execClaim(args);
+      break;
+    case 'users':
+      execListUsers(args);
+      break;
+    default:
+      stderr(chalk`{red ERROR: CMD<${args.cmd}> not found!}`)
+  }
+}
+
+main();

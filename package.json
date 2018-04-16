@@ -1,0 +1,41 @@
+{
+  "name": "@e2fyi/firebase-admin",
+  "version": "1.0.0",
+  "description": "CLI for firebase admin sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "release": "np"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e2fyi/firebase-admin.git"
+  },
+  "bin": {
+    "fb-admin": "./bin/fb-admin"
+  },
+  "keywords": [
+    "cli",
+    "firebase",
+    "admin sdk",
+    "custom claims",
+    "customClaims"
+  ],
+  "author": "eterna2 <eterna2@hotmail.com> (https://e2.fyi)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/e2fyi/firebase-admin/issues"
+  },
+  "homepage": "https://github.com/e2fyi/firebase-admin#readme",
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "chalk": "^2.3.2",
+    "dotenv": "^5.0.1",
+    "firebase-admin": "^5.12.0",
+    "minimatch": "^3.0.4",
+    "np": "^2.20.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
