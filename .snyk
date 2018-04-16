@@ -1,4 +1,12 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.10.2
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:protobufjs:20180305':
+    - firebase-admin > @google-cloud/firestore > @google-cloud/common-grpc > grpc > protobufjs:
+        reason: None given
+        expires: '2018-05-16T09:32:31.538Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > grpc > protobufjs:
+        reason: None given
+        expires: '2018-05-16T09:32:31.538Z'
 patch: {}
