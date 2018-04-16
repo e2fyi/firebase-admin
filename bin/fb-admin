@@ -101,6 +101,17 @@ function inferType(value) {
   return value;
 }
 
+async function getUID(targetEmail, nextPageToken) {
+  var { list, pageToken } = await listAllUsers(nextPageToken);
+  list = list.filter(({email})=>email===targetEmail);
+  if (list.length > 0) {
+    return list[0].uid;
+  }
+  if (pageToken) return await getUID(targetEmail, pageToken);
+  stde(chalk`{red ERROR: USER<email=${targetEmail}> does not exist!}`);
+  return false;
+}
+
 async function execClaim({ email, data, flags }) {
   if (flags && flags.length > 0) {
     data = {};
