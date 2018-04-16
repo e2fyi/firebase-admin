@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
 const minimatch = require('minimatch');
@@ -44,19 +44,24 @@ init.addArgument(['cred'], {
     'Path to the JSON credential for firebase project.'
 });
 function execInit(args) {
-  const { cred } = args;
+  const wkdir = process.cwd();
+  var { cred } = args;
   // check if crediential exists
   if (!fs.existsSync(cred)) {
     stde(chalk`{red ERROR: crediential<{bold ${cred}}> does not exist!`);
     return;
   }
+  if (!path.isAbsolute(cred)) {
+    cred = path.resolve(wkdir, cred);
+  }
   // write to .env
   const outStr = `FIREBASE_SERVICE_ACCOUNT=${cred}`;
   try {
-    fs.writeFileSync('.env', outStr);
-    stdo(chalk`{green SUCCESS: credentials written to {bold .env}}`);
+    let dst = path.resolve(__dirname, '..', '.env');
+    fs.writeFileSync(dst, outStr);
+    stdo(chalk`{green SUCCESS: credentials written to {bold ${dst}}}`);
   } catch (error) {
-    stde(chalk`{red ERROR: ${error}`);
+    stde(chalk`{red ERROR: ${error}}`);
   }
 }
 

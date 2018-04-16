@@ -1,7 +1,7 @@
 'use strict';
 
 // load environment variables in .env
-require('dotenv').config();
+require('dotenv').config({path: `${__dirname}/.env`});
 const chalk = require('chalk');
 const admin = require('firebase-admin');
 
