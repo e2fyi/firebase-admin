@@ -1,6 +1,8 @@
 /firebase
 ===
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![dependencies Status](https://david-dm.org/e2fyi/firebase-admin/status.svg)](https://david-dm.org/e2fyi/firebase-admin)
+[![Known Vulnerabilities](https://snyk.io/test/github/e2fyi/firebase-admin/badge.svg)](https://snyk.io/test/github/e2fyi/firebase-admin)
 
 `cli` for [firebase-admin](https://www.npmjs.com/package/firebase-admin).
 

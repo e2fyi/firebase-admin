@@ -4,7 +4,7 @@
   "description": "CLI for firebase admin sdk",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "snyk test && echo \"Error: no test specified\" && exit 0",
     "release": "np"
   },
   "repository": {
@@ -37,5 +37,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "snyk": "^1.71.0"
   }
 }
