@@ -116,8 +116,10 @@ async function execClaim({ email, data, flags }) {
   if (flags && flags.length > 0) {
     data = {};
     flags.forEach(([key, value])=>{
-      value = inferType(value);
-      data[key] = value;
+      if (key) {
+        value = inferType(value);
+        data[key] = value;
+      }
     });
   }
 
@@ -165,7 +167,7 @@ function printLs(list, pattern) {
       );
     else
       stdo(
-        chalk`{orange ${uid} \t {bold ${email}} \t ${emailVerified} \t\t ${JSON.stringify(
+        chalk`{white ${uid} \t {bold ${email}} \t ${emailVerified} \t\t ${JSON.stringify(
           customClaims
         )}}`
       );
