@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.10.2
+version: v1.14.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:protobufjs:20180305':
@@ -9,4 +9,26 @@ ignore:
     - firebase-admin > @google-cloud/firestore > google-gax > grpc > protobufjs:
         reason: None given
         expires: '2018-05-16T09:32:31.538Z'
-patch: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - firebase-admin > @google-cloud/storage > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/firestore > @google-cloud/common-grpc > grpc > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > grpc > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/storage > @google-cloud/common > google-auto-auth > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > google-auto-auth > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/storage > @google-cloud/common > split-array-stream > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/storage > gcs-resumable-upload > google-auto-auth > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/firestore > @google-cloud/common-grpc > @google-cloud/common > google-auto-auth > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
+    - firebase-admin > @google-cloud/firestore > @google-cloud/common-grpc > @google-cloud/common > split-array-stream > async > lodash:
+        patched: '2020-05-01T06:19:28.452Z'
